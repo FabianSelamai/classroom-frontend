@@ -39,6 +39,7 @@ function App() {
                       list: '/',
                       meta: { label: 'Home', icon: <Home />},
 
+
                   },
                   {
                       name: 'subjects',
