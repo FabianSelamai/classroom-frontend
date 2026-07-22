@@ -1,7 +1,8 @@
 import React, {useMemo, useState} from 'react'
 import {ListView} from "@/components/refine-ui/views/list-view.tsx";
 import {Breadcrumb} from "@/components/refine-ui/layout/breadcrumb.tsx";
-import {Badge, Search} from "lucide-react";
+import {Search} from "lucide-react";
+import {Badge} from "@/components/ui/badge.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
 import {DEPARTMENT_OPTIONS} from "@/constants";
@@ -15,6 +16,12 @@ import {ColumnDef} from "@tanstack/react-table";
 const SubjectsList = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState('all')
+    const departmentFilters = selectedDepartment === 'all' ? [] : [
+        { field: 'department', operator: 'eq' as const, value: selectedDepartment},
+    ];
+    const searchFilters = searchQuery ? [
+        {field: 'name', operator: 'contains' as const, value: searchQuery}
+    ] : [];
     const subjectTable = useTable<Subject>({
         columns: useMemo<ColumnDef<Subject>[]>(() => [
             {
@@ -23,20 +30,47 @@ const SubjectsList = () => {
                 size: 100,
                 header: () => <p className="column-title ml-2">Code</p>,
                 cell: ({ getValue}) => <Badge>{getValue<String>()}</Badge>
+            },
+            {
+                id: 'name',
+                accessorKey: 'name',
+                size: 200,
+                header: () => <p className="column-title">Name</p>,
+                cell: ({ getValue}) => <span className="text-foreground">{getValue<string>()}</span>,
+                filterFn: 'includesString'
+            },
+            {
+                id: 'department',
+                accessorKey: 'department',
+                size: 150,
+                header: () => <p className="column-title ml-2">Department</p>,
+                cell: ({ getValue}) => <Badge variant="secondary">{getValue<string>()}</Badge>,
+            },
+            {
+                id: 'description',
+                accessorKey: 'description',
+                size: 300,
+                header: () => <p className="column-title">Description</p>,
+                cell: ({getValue}) => <span className="truncate line-clamp-2">{getValue<string>()}</span>,
             }
             ], []),
         refineCoreProps: {
             resource: 'subjects',
             pagination: { pageSize: 10, mode: 'server' },
-            filters: {},
-            sorters:{},
+            filters: {
+                permanent: [...departmentFilters, ...searchFilters]
+            },
+            sorters:{
+                initial: [
+                    {field: 'id', order: 'desc'},
+                ]
+            },
 
         }
     });
     return (
         <ListView>
             <Breadcrumb />
-
 
             <h1 className="page-title">Subject<h1/></h1>
 
