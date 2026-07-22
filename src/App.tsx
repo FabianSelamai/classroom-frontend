@@ -38,8 +38,6 @@ function App() {
                       name: 'dashboard',
                       list: '/',
                       meta: { label: 'Home', icon: <Home />},
-
-
                   },
                   {
                       name: 'subjects',
