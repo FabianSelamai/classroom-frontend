@@ -63,6 +63,7 @@ const SubjectsList = () => {
             sorters:{
                 initial: [
                     {field: 'id', order: 'desc'},
+
                 ]
             },
 
